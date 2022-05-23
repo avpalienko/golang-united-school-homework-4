@@ -57,7 +57,7 @@ func StringSum(input string) (output string, err error) {
 			}
 			i--
 			if op, er := strconv.ParseInt(token, 10, 64); er != nil {
-				return "", fmt.Errorf("%w", er)
+				return "", er
 			} else {
 				if state == stWaitFirst {
 					op1 = op
@@ -71,7 +71,7 @@ func StringSum(input string) (output string, err error) {
 
 		} else if state == stWaitOp {
 			if op, er := getOp(inp[i]); er != nil {
-				return "", fmt.Errorf("%w", er)
+				return "", er
 			} else {
 				oper = op
 			}
