@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestStringSum(t *testing.T) {
+func TestStringSum1(t *testing.T) {
 	type args struct {
 		input string
 	}
