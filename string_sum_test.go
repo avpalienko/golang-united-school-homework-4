@@ -19,7 +19,7 @@ func TestStringSum1(t *testing.T) {
 			"8",
 		},
 		{"t2", args{"- 3 + - 5"}, "-8"},
-		{"t3", args{"- 30 - 5"}, "-35"},
+		{"t3", args{"- f30 - 5"}, "-35"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

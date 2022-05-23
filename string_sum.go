@@ -36,24 +36,24 @@ const (
 )
 
 func StringSum(input string) (output string, err error) {
-	if input == "" {
-		return "", fmt.Errorf("%w", errorEmptyInput)
+	if er := prepareInput(&input); er != nil {
+		return "", er
 	}
-	inp := strings.Replace(input, " ", "", -1)
+
 	token := ""
 	output = ""
 	op1 := int64(0)
 	op2 := int64(0)
 	oper := ""
 	state := stWaitFirst
-	for i := 0; i < len(inp); i++ {
+	for i := 0; i < len(input); i++ {
 		if state == stWaitFirst || state == stWaitSecond {
-			if inp[i] == '+' || inp[i] == '-' {
-				token += inp[i : i+1]
+			if input[i] == '+' || input[i] == '-' {
+				token += input[i : i+1]
 				i++
 			}
-			for ; i < len(inp) && isDig(inp[i:i+1]); i++ {
-				token += inp[i : i+1]
+			for ; i < len(input) && isDig(input[i:i+1]); i++ {
+				token += input[i : i+1]
 			}
 			i--
 			if op, er := strconv.ParseInt(token, 10, 64); er != nil {
@@ -70,7 +70,7 @@ func StringSum(input string) (output string, err error) {
 			}
 
 		} else if state == stWaitOp {
-			if op, er := getOp(inp[i]); er != nil {
+			if op, er := getOp(input[i]); er != nil {
 				return "", er
 			} else {
 				oper = op
@@ -106,4 +106,19 @@ func getOp(input byte) (string, error) {
 	default:
 		return "", fmt.Errorf("%w: %c", errorInvalidOpertion, input)
 	}
+}
+
+func prepareInput(input *string) error {
+	if *input == "" {
+		return fmt.Errorf("%w", errorEmptyInput)
+	}
+	*input = strings.Replace(*input, " ", "", -1)
+	for i := 0; i < len(*input); i++ {
+		if (*input)[i] != '+' && (*input)[i] != '-' {
+			if _, err := strconv.Atoi((*input)[i : i+1]); err != nil {
+				return fmt.Errorf("%w", err)
+			}
+		}
+	}
+	return nil
 }
