@@ -14,9 +14,7 @@ var (
 	errorEmptyInput = errors.New("input is empty")
 	// Use when the expression has number of operands not equal to two
 	errorNotTwoOperands  = errors.New("expecting two operands, but received more or less")
-	errorInvalidOperand  = errors.New("invalid operand")
 	errorInvalidOpertion = errors.New("invalid operation")
-	errorExtraSymbols    = errors.New("extra symbols")
 )
 
 // Implement a function that computes the sum of two int numbers written as a string
@@ -48,8 +46,7 @@ func StringSum(input string) (output string, err error) {
 	op2 := int64(0)
 	oper := ""
 	state := stWaitFirst
-	i := 0
-	for ; i < len(inp); i++ {
+	for i := 0; i < len(inp); i++ {
 		if state == stWaitFirst || state == stWaitSecond {
 			if inp[i] == '+' || inp[i] == '-' {
 				token += inp[i : i+1]
@@ -60,7 +57,7 @@ func StringSum(input string) (output string, err error) {
 			}
 			i--
 			if op, er := strconv.ParseInt(token, 10, 64); er != nil {
-				return "", fmt.Errorf("%w: %s", errorInvalidOperand, token)
+				return "", fmt.Errorf("%w", er)
 			} else {
 				if state == stWaitFirst {
 					op1 = op
@@ -73,17 +70,14 @@ func StringSum(input string) (output string, err error) {
 			}
 
 		} else if state == stWaitOp {
-			switch inp[i] {
-			case '+':
-				oper = "+"
-			case '-':
-				oper = "-"
-			default:
-				return "", fmt.Errorf("%w: %s", errorInvalidOpertion, inp[i:i+1])
+			if op, er := getOp(inp[i]); er != nil {
+				return "", fmt.Errorf("%w", er)
+			} else {
+				oper = op
 			}
 			state = stWaitSecond
 		} else if state == stEnd {
-			return "", fmt.Errorf("%w: %s", errorExtraSymbols, inp[i:])
+			return "", fmt.Errorf("%w", errorNotTwoOperands)
 		}
 	}
 	if state != stEnd {
@@ -101,4 +95,15 @@ func isDig(input string) bool {
 		return true
 	}
 	return false
+}
+
+func getOp(input byte) (string, error) {
+	switch input {
+	case '+':
+		return "+", nil
+	case '-':
+		return "-", nil
+	default:
+		return "", fmt.Errorf("%w: %c", errorInvalidOpertion, input)
+	}
 }
